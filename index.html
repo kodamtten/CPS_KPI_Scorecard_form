@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Goal Submission & Review Form</title>
+  <style>
+    :root {
+      --primary-navy: #002855;
+      --header-blue: #003366;
+      --table-header-navy: #001f3f;
+      --input-bg: #dbe4f0;
+      --border-color: #b0c4de;
+      --accent-yellow: #ffc72c;
+      --bg-gray: #f4f6f9;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    body { background-color: var(--bg-gray); margin: 0; padding: 20px; color: #333; }
+    .form-container { max-width: 1100px; margin: 0 auto; background: var(--white); border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .form-header { background-color: var(--primary-navy); color: var(--white); padding: 12px 20px; font-size: 18px; font-weight: bold; letter-spacing: 0.5px; border-bottom: 4px solid var(--accent-yellow); }
+    .section-container { padding: 20px; }
+    .section-title { font-size: 13px; font-weight: bold; color: var(--header-blue); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px 15px;
+      background-color: #f8fafc;
+      padding: 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      margin-bottom: 25px;
+    }
+
+    .grid-label { font-size: 11px; font-weight: bold; color: var(--primary-navy); display: flex; align-items: center; }
+    .grid-input-field { grid-column: span 2; }
+
+    input[type="text"], input[type="number"], input[type="date"], select {
+      width: 100%; padding: 6px 8px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 2px; font-size: 12px; color: #111; outline: none;
+    }
+    input:focus, select:focus { background-color: #ffffff; border-color: var(--primary-navy); }
+
+    .table-responsive { overflow-x: auto; margin-bottom: 15px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background-color: var(--table-header-navy); color: var(--white); padding: 8px 6px; font-size: 11px; text-align: left; font-weight: 600; border: 1px solid #00152b; }
+    td { padding: 4px 6px; border: 1px solid #d0d7de; vertical-align: middle; }
+    td.row-num { text-align: center; font-weight: bold; background-color: #eef2f7; width: 30px; }
+
+    .btn-container { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    .btn { padding: 8px 16px; font-size: 12px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; transition: background-color 0.2s; }
+    .btn-add { background-color: #28a745; color: white; }
+    .btn-add:hover { background-color: #218838; }
+    .btn-add:disabled { background-color: #6c757d; cursor: not-allowed; }
+    .btn-remove { background-color: #dc3545; color: white; padding: 4px 8px; font-size: 10px; }
+    .btn-submit { background-color: var(--primary-navy); color: white; font-size: 14px; padding: 10px 24px; }
+    .btn-submit:hover { background-color: var(--header-blue); }
+    .btn-submit:disabled { background-color: #888888; cursor: wait; }
+    .row-count-badge { font-size: 11px; color: #666; font-weight: bold; }
+
+    .custom-select-wrapper { position: relative; }
+    .dropdown-list { position: absolute; top: 100%; left: 0; right: 0; max-height: 220px; overflow-y: auto; background-color: #ffffff; border: 1px solid var(--primary-navy); border-top: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 1000; display: none; }
+    .dropdown-list.show { display: block; }
+    .dropdown-item { padding: 8px 10px; font-size: 12px; color: #333; cursor: pointer; border-bottom: 1px solid #f0f4f8; }
+    .dropdown-item:hover { background-color: var(--input-bg); color: var(--primary-navy); font-weight: bold; }
+    .no-results { padding: 10px; font-size: 12px; color: #777; font-style: italic; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <div class="form-header">PERFORMANCE GOAL SUBMISSION & REVIEW FORM</div>
+
+  <form id="customForm" class="section-container">
+    <div class="section-title">SECTION A — EMPLOYEE & SUBMISSION METADATA</div>
+    <div class="meta-grid">
+      <div class="grid-label">Vendor Name/ID:</div>
+      <div class="grid-input-field"><input type="text" id="vendorNameId" required placeholder="Vendor Name or ID"></div>
+
+      <div class="grid-label">Department / School:</div>
+      <div class="grid-input-field custom-select-wrapper">
+        <input type="text" id="departmentSchool" placeholder="Click or type to search..." required autocomplete="off"/>
+        <div id="schoolDropdown" class="dropdown-list"></div>
+      </div>
+
+      <div class="grid-label">Contract Manager Name:</div>
+      <div class="grid-input-field"><input type="text" id="contractManagerName" required placeholder="Manager Name"></div>
+
+      <div class="grid-label">Contract Number:</div>
+      <div class="grid-input-field"><input type="text" id="contractNumber" required placeholder="e.g. CNT-2026-001"></div>
+
+      <div class="grid-label">Quarter:</div>
+      <div class="grid-input-field">
+        <select id="quarter" required>
+          <option value="Q1">Q1</option>
+          <option value="Q2">Q2</option>
+          <option value="Q3">Q3</option>
+          <option value="Q4">Q4</option>
+        </select>
+      </div>
+
+      <div class="grid-label">Year:</div>
+      <div class="grid-input-field"><input type="number" id="year" value="2026" required min="2020" max="2035"></div>
+
+      <div class="grid-label">Submission Date:</div>
+      <div class="grid-input-field"><input type="date" id="submissionDate" required></div>
+    </div>
+
+    <div class="section-title">SECTION B — GOAL DEFINITION (MAX 10 KPIS)</div>
+    <div class="table-responsive">
+      <table id="kpiTable">
+        <thead>
+          <tr>
+            <th style="width: 30px;">#</th>
+            <th>KPI Name</th>
+            <th>KPI Description</th>
+            <th style="width: 100px;">Target / Metric</th>
+            <th style="width: 80px;">Weight (%)</th>
+            <th style="width: 150px;">Category</th>
+            <th>KPI Owner</th>
+            <th style="width: 70px;">Score</th>
+            <th style="width: 50px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="kpiTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="btn-container">
+      <div>
+        <button type="button" id="addRowBtn" class="btn btn-add">+ Add Row</button>
+        <span id="rowCountDisplay" class="row-count-badge">(1 / 10 Rows)</span>
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-submit">Submit Form</button>
+    </div>
+  </form>
+</div>
+
+<!-- Success Modal Overlay -->
+<div id="successModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:30px; border-radius:8px; max-width:500px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <h2 style="color:#002855; margin-top:0;">Form Submitted Successfully!</h2>
+    <p style="font-size:14px; color:#555;">Your performance goals have been recorded and your audit scorecard PDF has been generated.</p>
+    <div style="margin: 25px 0;">
+      <a id="printPdfBtn" href="#" target="_blank" class="btn" style="background:#28a745; color:#fff; text-decoration:none; padding:12px 20px; font-size:14px; border-radius:4px; display:inline-block; font-weight:bold;">
+        🖨️ Print / Download PDF Scorecard
+      </a>
+    </div>
+    <button type="button" onclick="closeModal()" class="btn" style="background:#6c757d; color:#fff;">Submit Another Entry</button>
+  </div>
+</div>
+
+<script>
+  // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbydyYfcsDnGg0W7HdLFZHKcP3cSDXc-8WCOeCLw4Nm_wxXf4CTp7ggRzflaO1R1RxfX/exec';
+
+  const maxRows = 10;
+  const tbody = document.getElementById('kpiTbody');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const rowCountDisplay = document.getElementById('rowCountDisplay');
+  const form = document.getElementById('customForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  const schoolsList = [
+    "Namaste Charter School", "Central Office", "District Operations", 
+    "Academy of Communications & Technology", "Addams Elementary School", 
+    "Air Force Academy High School", "Albany Park Multicultural Academy", "Alcott College Prep"
+  ];
+
+  const schoolInput = document.getElementById('departmentSchool');
+  const schoolDropdown = document.getElementById('schoolDropdown');
+
+  const categoryOptions = `
+    <option value="Delivery">D - Delivery</option>
+    <option value="Quality">Q - Quality</option>
+    <option value="Service & Support">S - Service & Support</option>
+    <option value="Compliance and Security">C - Compliance & Security</option>
+    <option value="Staffing & Account Mgmt">ST - Staffing & Account Mgmt</option>
+    <option value="Stakeholder Satisfaction">SA - Stakeholder Satisfaction</option>
+  `;
+
+  function renderSchoolList(filterText = '') {
+    schoolDropdown.innerHTML = '';
+    const filtered = schoolsList.filter(s => s.toLowerCase().includes(filterText.toLowerCase().trim()));
+    if (filtered.length === 0) {
+      schoolDropdown.innerHTML = '<div class="no-results">No matching schools found</div>';
+      return;
+    }
+    filtered.slice(0, 50).forEach(schoolName => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item';
+      item.textContent = schoolName;
+      item.addEventListener('click', () => {
+        schoolInput.value = schoolName;
+        schoolDropdown.classList.remove('show');
+      });
+      schoolDropdown.appendChild(item);
+    });
+  }
+
+  schoolInput.addEventListener('focus', () => { renderSchoolList(schoolInput.value); schoolDropdown.classList.add('show'); });
+  schoolInput.addEventListener('input', () => { renderSchoolList(schoolInput.value); schoolDropdown.classList.add('show'); });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.custom-select-wrapper')) schoolDropdown.classList.remove('show'); });
+
+  function createRow() {
+    if (tbody.children.length >= maxRows) return;
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="row-num"></td>
+      <td><input type="text" class="kpi-name" required placeholder="Deliver goods..."></td>
+      <td><input type="text" class="kpi-desc" required placeholder="Detailed description..."></td>
+      <td><input type="text" class="kpi-target" required placeholder="100"></td>
+      <td><input type="number" step="0.01" class="kpi-weight" required placeholder="0.25"></td>
+      <td><select class="kpi-category" required>${categoryOptions}</select></td>
+      <td><input type="text" class="kpi-link" placeholder="Owner Name"></td>
+      <td><input type="number" class="kpi-score" min="0" max="100" placeholder="80"></td>
+      <td style="text-align: center;"><button type="button" class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+    `;
+    tbody.appendChild(row);
+    updateRowIndices();
+  }
+
+  function removeRow(btn) {
+    if (tbody.children.length > 1) {
+      btn.closest('tr').remove();
+      updateRowIndices();
+    } else {
+      alert("At least one KPI entry is required.");
+    }
+  }
+
+  function updateRowIndices() {
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach((row, index) => { row.querySelector('.row-num').textContent = index + 1; });
+    rowCountDisplay.textContent = `(${rows.length} / ${maxRows} Rows)`;
+    addRowBtn.disabled = rows.length >= maxRows;
+  }
+
+  document.getElementById('submissionDate').valueAsDate = new Date();
+  createRow();
+  addRowBtn.addEventListener('click', createRow);
+
+  // Form Submission via Fetch API to Google Apps Script
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const metadata = {
+      vendorNameId: document.getElementById('vendorNameId').value,
+      departmentSchool: document.getElementById('departmentSchool').value,
+      contractManagerName: document.getElementById('contractManagerName').value,
+      contractNumber: document.getElementById('contractNumber').value,
+      quarter: document.getElementById('quarter').value,
+      year: document.getElementById('year').value,
+      submissionDate: document.getElementById('submissionDate').value
+    };
+
+    const kpis = [];
+    tbody.querySelectorAll('tr').forEach((row) => {
+      kpis.push({
+        kpiName: row.querySelector('.kpi-name').value,
+        kpiDescription: row.querySelector('.kpi-desc').value,
+        targetMetric: row.querySelector('.kpi-target').value,
+        weight: row.querySelector('.kpi-weight').value,
+        category: row.querySelector('.kpi-category').value,
+        kpiLink: row.querySelector('.kpi-link').value,
+        score: row.querySelector('.kpi-score').value
+      });
+    });
+
+    const payload = { metadata, kpis };
+
+    fetch(scriptURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === 'success') {
+        document.getElementById('printPdfBtn').href = response.pdfUrl;
+        window.open(response.pdfUrl, '_blank');
+        document.getElementById('successModal').style.display = 'flex';
+        
+        form.reset();
+        document.getElementById('submissionDate').valueAsDate = new Date();
+        tbody.innerHTML = '';
+        createRow();
+      } else {
+        alert('Error: ' + response.message);
+      }
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Form';
+    })
+    .catch(error => {
+      alert('Submission failed: ' + error);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Form';
+    });
+  });
+
+  function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
